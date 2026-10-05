@@ -36,3 +36,29 @@ conda activate cspc
 
 **Conclusion:**
 - the observed decay data follows the expected exponential decay behavior. i learned how to read numerical data with NumPy, create plots with Matplotlib, and use Snakemake to automate a data processing workflow.
+
+---
+## PW2 - Lab A: Motion from Tracking Data
+
+**What I built:**
+- read the free-fall position data from a CSV file using NumPy
+- calculated velocity and acceleration using numerical differentiation with `np.gradient`
+- integrated acceleration and velocity numerically to recover velocity and position
+- plotted position, velocity, and acceleration using Matplotlib
+
+**Results:**
+- mean acceleration: -8.5797 m/s²
+- acceleration standard deviation: 28.7161 m/s²
+- maximum difference between the original and recovered position: 0.7846 m
+
+**Noise observation:**
+- differentiation amplifies measurement noise
+- applying differentiation twice makes the acceleration much noisier than the original position data
+
+**Integration:**
+- numerical integration was used to recover velocity from acceleration and position from velocity (`cumulative_trapezoid`)
+- the recovered position differed from the original position by at most 0.7846 m
+- integration partly suppresses the noise introduced by differentiation, because it's a sum and some errors get cancelled
+
+**Conclusion:**
+- the motion data was successfully processed to obtain velocity and acceleration from position measurements. the acceleration is noisy because numerical differentiation amplifies measurement noise. integrating the data back showed that the original position can be recovered reasonably well, with a maximum difference of about 0.78 m. i learned how to use NumPy for numerical differentiation and integration and how noise affects numerical calculations.
