@@ -62,3 +62,63 @@ conda activate cspc
 
 **Conclusion:**
 - the motion data was successfully processed to obtain velocity and acceleration from position measurements. the acceleration is noisy because numerical differentiation amplifies measurement noise. integrating the data back showed that the original position can be recovered reasonably well, with a maximum difference of about 0.78 m. i learned how to use NumPy for numerical differentiation and integration and how noise affects numerical calculations.
+
+---
+## PW2 - Lab B: Optimization in Chemistry
+
+**What I built:**
+
+- compared three optimization methods: Gradient Descent, Newton's method, and SLSQP
+- used optimization methods for reaction rate fitting and chemical equilibrium
+- analyzed titration data to find the equivalence point
+
+**Optimization methods:**
+
+- tested the three methods first on a simple convex function
+- all three methods found the same minimum at `x = 3`
+- then tested the methods on a harder function with several stationary points
+- Gradient Descent starting from `x = 0` converged to approximately `x = -1.30`
+- Gradient Descent starting from `x = 2` also converged to approximately `x = -1.30`
+- Newton's method starting from `x = 0` converged to approximately `x = 0.17`
+- this point is a local maximum because `d2g < 0`
+- Newton's method starting from `x = 2` converged to approximately `x = 1.13`
+- this point is a local minimum because `d2g > 0`
+- SLSQP starting from `x = 0` converged to approximately `x = -1.30`
+- SLSQP starting from `x = 2` also converged to approximately `x = -1.30`
+- the methods did not always agree because the harder function has several stationary points
+- the starting point changed the result of Newton's method: starting from `x = 0` led to a local maximum, while starting from `x = 2` led to a local minimum
+
+**Reaction rate fitting:**
+
+- used the first-order reaction model `C(t) = C0 * exp(-k*t)` to fit noisy concentration data
+- created a total squared error function to measure the difference between the measured and predicted concentrations
+- used SLSQP to find the value of `k` that minimized the total error
+- the fitted rate constant was approximately `k = 0.262`
+- plotted the measured concentration data together with the fitted curve in `kinetics.png`
+
+**Chemical equilibrium:**
+
+- studied the reaction `H2 + I2 <=> 2HI`, starting with `1 mol` of `H2` and `1 mol` of `I2`
+- represented the reaction using the extent `x`, where `H2 = 1-x`, `I2 = 1-x`, and `HI = 2x`
+- solved the equilibrium condition in two ways: Newton root-finding and SLSQP by minimizing the squared imbalance
+- both methods gave approximately `x = 0.66`
+- this gives equilibrium amounts of approximately `0.34 mol H2`, `0.34 mol I2`, and `1.33 mol HI`
+- plotted how the amounts change with reaction extent and marked the equilibrium point in `equilibrium.png`
+
+**Titration:**
+
+- analyzed titration data by plotting pH against the volume of titrant added
+- calculated the slope of the titration curve to identify the equivalence point
+- the equivalence point was found at `50 mL`
+- at the equivalence point, the pH changes most rapidly and the slope reaches its maximum
+- created two plots side by side: pH vs volume and slope vs volume
+- marked the equivalence point on both plots
+- saved the result as `titration.png`
+
+**Conclusion:**
+
+- this lab showed that different optimization methods can behave differently when a function has several stationary points
+- I learned that Newton's method finds stationary points, so it can converge to either a minimum or a maximum depending on the starting point
+- I also learned that the starting point can strongly affect the result of an optimization method
+- SLSQP was useful for constrained optimization because bounds could be placed on the variables
+- optimization methods can be applied to real chemistry problems such as fitting reaction rate constants, finding chemical equilibrium, and identifying the equivalence point of a titration
