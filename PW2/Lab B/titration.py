@@ -28,7 +28,7 @@ print(f"The equivalence point: {eq_point}mL")
 #         equivalence point; (right) the slope vs volume, showing it peaks
 #         at the equivalence point. Save as titration.png.
 
-fig, axes = plt.subplots(1, 2)
+fig, axes = plt.subplots(1, 2, figsize = (10, 4))
 
 axes[0].plot(V, pH)
 axes[0].axvline(eq_point, linestyle="--")
