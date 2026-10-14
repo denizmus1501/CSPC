@@ -122,3 +122,85 @@ conda activate cspc
 - I also learned that the starting point can strongly affect the result of an optimization method
 - SLSQP was useful for constrained optimization because bounds could be placed on the variables
 - optimization methods can be applied to real chemistry problems such as fitting reaction rate constants, finding chemical equilibrium, and identifying the equivalence point of a titration
+
+---
+# PW3 - Data, Distributions, Testing, and Causation
+
+**Data**
+
+- Dataset 1: Heart Disease (Cleveland), Kaggle / UCI, 303 patients (164 healthy, 139 with heart disease)
+- Dataset 2: `chemicals_cancer.csv`, synthetic, 1000 patients (benzene, cadmium, pollution index, age, malignancy)
+
+**What I built**
+
+- `heart_disease.py`: loaded the heart data with pandas, plotted and tested the distributions, compared the two groups and measured the age / heart rate relationship
+- `chemicals_cancer.py`: measured the association of each chemical with malignancy and tested whether a third variable creates it
+- bonus: entropy of the `target` column
+
+**Distributions and normality (Session 1)**
+
+- histograms of `age`, `chol`, `trestbps` and `thalach` are saved in `distributions.png`
+- `age` and `thalach` are roughly bell-shaped, with a slight tail to the left (skewness -0.21 and -0.53)
+- `trestbps` has a tail to the right (skewness 0.70)
+- `chol` is clearly skewed to the right, with a few very high values up to 564 (skewness 1.13)
+- normality was checked with Q-Q plots (`qq_plots.png`) and with the Shapiro-Wilk test (null hypothesis: the data is normal, so p < 0.05 means evidence against normality)
+- Shapiro-Wilk p-values: `age` 0.006, `chol` ~0, `trestbps` 2e-6, `thalach` 7e-5
+- verdict: none of the four variables is normal at the 5% level
+- `age` and `thalach` are only mildly non-normal (the p-values are not extreme and the histograms are close to a bell), while `chol` and `trestbps` are clearly not normal
+- because of these verdicts I chose a test that does not assume normality (Mann-Whitney U) in Session 2
+
+**Heart rate comparison (Task 4)**
+
+- split `thalach` into healthy (`target = 0`, n = 164) and heart disease (`target = 1`, n = 139)
+- test: Mann-Whitney U, because `thalach` is not normal and the test compares the ranks of the values
+- p-value = 1.9e-13, far below 0.05
+- mean maximum heart rate with the standard error of the mean (SEM = std / sqrt(n)):
+  - healthy: 158.4 ± 1.5 beats/min
+  - heart disease: 139.3 ± 1.9 beats/min
+- plot: bar chart of the two means with SEM error bars in `task4_heart_rate.png`
+- the bars differ by about 19 beats/min, which is much larger than the error bars, so the picture agrees with the test
+- conclusion: patients with heart disease reach a lower maximum heart rate than healthy patients, and the difference is statistically significant
+
+**Age and heart rate (Task 5)**
+
+- Pearson r = -0.39, which indicates a negative correlation
+- scatter plot in `task5_correlation.png`
+- older patients tend to have a lower maximum heart rate, but the relationship is only moderate because the points are quite spread out
+
+
+**Chemical mystery**
+
+**Naive analysis (Task 6)**
+
+- benzene vs malignancy: r = 0.385
+- cadmium vs malignancy: r = 0.880
+- scatter plots in `task6_scatterplots.png`
+- at face value cadmium looks like the cause, because its correlation with malignancy is much stronger than benzene's
+
+**Looking again (Task 7)**
+
+- suspected third variable: `pollution_index`
+- the correlation matrix shows that the pollution index is almost identical to cadmium (r = 0.98) and strongly related to malignancy (r = 0.90), while it is almost unrelated to benzene (r = 0.05)
+- so pollution could be influencing both cadmium and malignancy
+- I kept only the patients with a similar pollution index (between 40 and 60, 199 patients) and recomputed the correlations:
+  - benzene: r went from 0.385 to 0.702, the association remained and became stronger
+  - cadmium: r went from 0.880 to 0.316, the association became much weaker
+- possible explanation: in the full dataset, pollution and cadmium vary together, while pollution is also associated with malignancy. This may partly explain why cadmium initially appeared so strongly associated with malignancy
+- when the pollution range is restricted, the cadmium association becomes weaker
+- benzene is almost unrelated to pollution in the full dataset, and its association with malignancy remains strong in the selected group
+- cadmium keeps a smaller positive correlation (0.32), because the pollution index still varies within the 40–60 range
+- result: the analysis suggests that the original cadmium association may partly reflect confounding by pollution, while the benzene association remains strong in the selected group
+- this analysis alone cannot prove that benzene is the real cause of malignancy; further analysis would be needed to establish causation
+
+**Bonus (Entropy of `target`)**
+
+- proportions: 54.1% healthy, 45.9% heart disease
+- Shannon entropy H = -sum(p * log2(p)) = 0.995 bits, where the maximum for two categories is 1 bit
+- the column is almost perfectly balanced, so guessing the class without additional information is similar to flipping a coin
+
+**Conclusion**
+
+- heart disease patients have a clearly lower maximum heart rate than healthy patients (about 19 beats/min), and maximum heart rate decreases with age
+- in the chemical dataset, the initial analysis pointed to cadmium (r = 0.88 against 0.38 for benzene), but after restricting the pollution index to a similar range, the cadmium association became much weaker while the benzene association remained strong
+- the results suggest that pollution may partly explain the original cadmium correlation, but they do not prove that benzene causes malignancy
+- I learned how to check normality before choosing a statistical test, why a mean should be considered together with its uncertainty, and why correlation does not necessarily mean causation because a third variable can influence the observed relationship between two variables
