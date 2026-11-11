@@ -1,0 +1,43 @@
+A_TABLES = ["linear", "polynomial", "physics_bonus", "knn", "knn_splits",
+            "tree", "metrics", "thresholds", "importance"]
+A_PLOTS = ["strength", "residuals", "knn", "tree", "importance"]
+B_TABLES = ["raw_pc1", "variance", "loadings", "initialization", "inertia", "centers",
+            "crosstab_scaled", "crosstab_raw", "crosstab_two_PCs", "agreement", "supervised_bonus"]
+B_PLOTS = ["scree", "pca_plain", "elbow", "pca_clusters"]
+
+A_OUTPUTS = (expand("results/A_{name}.csv", name=A_TABLES)
+             + expand("results/A_{name}.png", name=A_PLOTS) + ["results/A_tree_top.txt"])
+B_OUTPUTS = (expand("results/B_{name}.csv", name=B_TABLES)
+             + expand("results/B_{name}.png", name=B_PLOTS))
+
+
+rule all:
+    input:
+        A_OUTPUTS,
+        B_OUTPUTS
+
+
+rule fetch:
+    output:
+        "data/concrete.csv"
+    shell:
+        "python fetch_concrete.py"
+
+
+rule session_a:
+    input:
+        "data/concrete.csv",
+        "sessionA.py"
+    output:
+        A_OUTPUTS
+    shell:
+        "python sessionA.py"
+
+
+rule session_b:
+    input:
+        "sessionB.py"
+    output:
+        B_OUTPUTS
+    shell:
+        "python sessionB.py"

@@ -1,0 +1,10 @@
+|--- age <= 42.00
+|   |--- cement <= 257.70
+|   |   |--- truncated branch of depth 4
+|   |--- cement >  257.70
+|   |   |--- truncated branch of depth 4
+|--- age >  42.00
+|   |--- superplastic <= 6.45
+|   |   |--- truncated branch of depth 4
+|   |--- superplastic >  6.45
+|   |   |--- truncated branch of depth 4
